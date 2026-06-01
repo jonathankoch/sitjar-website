@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Mas Sitjar</title>
+  <meta name="description" content="Mas Sitjar" />
+  <meta name="theme-color" content="#0f1116" />
+
+  <!-- Load the hero as early as possible so it's ready before the reveal clears -->
+  <link rel="preload" as="image" href="images/hero.jpg" fetchpriority="high" />
+
+  <!-- Alegreya: vintage literary serif (Huerta Tipográfica) with Catalan
+       localized forms. Graceful fallback to Georgia italic. -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Alegreya:ital,wght@1,400;1,500;1,700&display=swap"
+    rel="stylesheet"
+  />
+
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+  <main class="hero">
+    <!-- Oversized so the slow scale never reveals an edge; see .hero__img in CSS -->
+    <img
+      class="hero__img"
+      src="images/hero.jpg"
+      alt="A misty mountain ridge at Mas Sitjar, low clouds drifting through the valley at dawn."
+      fetchpriority="high"
+      decoding="async"
+    />
+
+    <div class="hero__content">
+      <h1 class="hero__title">Mas Sitjar</h1>
+    </div>
+
+    <!-- Cinematic film grain (subtle). Sits above the scene, below the reveal. -->
+    <div class="grain" aria-hidden="true"></div>
+
+    <!--
+      THE REVEAL.
+      For now this is a plain white layer that fades out over 5s.
+      This is the hook for the future "clouds dissipating" work — replace /
+      augment this element with cloud layers, canvas, or SVG without touching
+      the rest of the page.
+    -->
+    <div class="reveal" aria-hidden="true"></div>
+  </main>
+
+  <!-- Hidden SVG filters. Referenced from CSS via filter: url(#worn-text). -->
+  <svg class="svg-defs" aria-hidden="true" focusable="false" width="0" height="0">
+    <defs>
+      <!--
+        "Worn / distressed" edges for the title.
+        Dial the look with two knobs:
+          • baseFrequency — higher = finer, grittier erosion; lower = softer waves
+          • scale (on feDisplacementMap) — how far edges are pushed (the "amount")
+      -->
+      <filter id="worn-text" x="-15%" y="-15%" width="130%" height="130%">
+        <feTurbulence
+          type="fractalNoise"
+          baseFrequency="0.7"
+          numOctaves="2"
+          seed="7"
+          result="noise"
+        />
+        <feDisplacementMap
+          in="SourceGraphic"
+          in2="noise"
+          scale="2.2"
+          xChannelSelector="R"
+          yChannelSelector="G"
+        />
+      </filter>
+    </defs>
+  </svg>
+</body>
+</html>

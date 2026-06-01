@@ -1,0 +1,163 @@
+/* =========================================================================
+   Mas Sitjar — placeholder hero
+   -------------------------------------------------------------------------
+   Three things happen on load, all pure CSS (no JS):
+     1. .hero__img  slowly scales 0.9 -> 1.1 over 10s  (subtle Ken Burns)
+     2. .reveal     white overlay fades out over 5s    (the cinematic reveal)
+     3. .hero__title fades + drifts in as the white clears
+   The timing/feel "knobs" are grouped in :root below.
+   ========================================================================= */
+
+:root {
+  /* Reveal */
+  --reveal-duration: 5s;     /* white overlay fade-out */
+  --reveal-ease: cubic-bezier(0.33, 0, 0.2, 1);
+
+  /* Hero image zoom */
+  --zoom-duration: 10s;
+  --zoom-from: 0.9;
+  --zoom-to: 1.1;
+  /* Base upscale so the image still covers the viewport at the smallest
+     zoom: it must be >= 1 / --zoom-from (1/0.9 ≈ 1.112). 115% adds margin. */
+  --hero-overscan: 115%;
+
+  /* Title entrance */
+  --title-delay: 1.8s;
+  --title-duration: 3.4s;
+  --title-color: #f4eee2;    /* warm off-white */
+  /* Single source of truth for the title face. To move to a licensed
+     self-hosted face later (e.g. Pradell), add an @font-face and change
+     only this line. */
+  --title-font: "Alegreya", Georgia, "Times New Roman", serif;
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  background: #0f1116;       /* deep neutral; shows behind nothing, just a safety net */
+  overflow: hidden;          /* single-screen placeholder, no scroll */
+  font-family: var(--title-font);
+}
+
+/* ---- Stage ------------------------------------------------------------- */
+/* Fixed + inset:0 fills the viewport exactly on every browser (no vh/svh/dvh
+   quirks), which is ideal for a single, non-scrolling screen. */
+.hero {
+  position: fixed;
+  inset: 0;
+  overflow: hidden;          /* clip the oversized / zooming image */
+}
+
+/* ---- Hero image (layer 1) --------------------------------------------- */
+.hero__img {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: var(--hero-overscan);
+  height: var(--hero-overscan);
+  object-fit: cover;
+  object-position: center 42%;   /* bias toward the horizon / sky */
+  transform: translate(-50%, -50%) scale(var(--zoom-from));
+  transform-origin: center;
+  will-change: transform;
+  animation: heroZoom var(--zoom-duration) ease-out forwards;
+}
+
+@keyframes heroZoom {
+  from { transform: translate(-50%, -50%) scale(var(--zoom-from)); }
+  to   { transform: translate(-50%, -50%) scale(var(--zoom-to)); }
+}
+
+/* ---- Title (layer 2) --------------------------------------------------- */
+.hero__content {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: 6vmin;
+  z-index: 2;
+  pointer-events: none;      /* nothing interactive yet */
+}
+
+.hero__title {
+  margin: 0;
+  font-family: var(--title-font);
+  font-style: italic;
+  font-weight: 500;
+  line-height: 1;
+  letter-spacing: 0;        /* Alegreya's italic is a touch wider than Playfair's */
+  font-size: clamp(3rem, 13vw, 10rem);
+  color: var(--title-color);
+  text-align: center;
+
+  /* "Worn" edges (SVG) + soft shadow halo so it reads over the bright sky */
+  filter:
+    url(#worn-text)
+    drop-shadow(0 1px 2px rgba(0, 0, 0, 0.45))
+    drop-shadow(0 6px 34px rgba(0, 0, 0, 0.5));
+
+  opacity: 0;
+  transform: translateY(14px);
+  animation: titleIn var(--title-duration) cubic-bezier(0.16, 1, 0.3, 1)
+             var(--title-delay) forwards;
+}
+
+@keyframes titleIn {
+  from { opacity: 0; transform: translateY(14px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ---- Film grain (layer 3) --------------------------------------------- */
+/* Tiny tiled SVG noise; very subtle, just adds cinematic texture. */
+.grain {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  pointer-events: none;
+  opacity: 0.12;
+  mix-blend-mode: soft-light;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* ---- The reveal (top layer) ------------------------------------------- */
+.reveal {
+  position: absolute;
+  inset: 0;
+  z-index: 10;
+  pointer-events: none;
+  background: #ffffff;
+  /* brief hold (image keeps loading + gives a beat) then clear */
+  animation: revealFade var(--reveal-duration) var(--reveal-ease) forwards;
+}
+
+@keyframes revealFade {
+  0%   { opacity: 1; }
+  12%  { opacity: 1; }   /* ~0.6s hold before it starts to clear */
+  100% { opacity: 0; }
+}
+
+/* ---- Reduced motion ---------------------------------------------------- */
+/* Keep the content; drop the heavy motion. The scene appears with a short,
+   gentle fade and no zoom or drift. */
+@media (prefers-reduced-motion: reduce) {
+  .hero__img {
+    animation: none;
+    transform: translate(-50%, -50%) scale(1);
+  }
+  .hero__title {
+    transform: none;
+    animation: titleIn 0.8s ease forwards;
+  }
+  .reveal {
+    animation: revealFade 0.8s ease forwards;
+  }
+  @keyframes revealFade {
+    from { opacity: 1; }
+    to   { opacity: 0; }
+  }
+}
