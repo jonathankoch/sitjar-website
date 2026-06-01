@@ -65,7 +65,12 @@ body {
   transform: translate(-50%, -50%) scale(var(--zoom-from));
   transform-origin: center;
   will-change: transform;
-  animation: heroZoom var(--zoom-duration) ease-out forwards;
+  /* longhand, not shorthand: Safari/iOS drops an `animation:` shorthand that
+     contains var(), which would freeze the hero on those devices. */
+  animation-name: heroZoom;
+  animation-duration: var(--zoom-duration);
+  animation-timing-function: ease-out;
+  animation-fill-mode: forwards;
 }
 
 @keyframes heroZoom {
@@ -102,8 +107,11 @@ body {
 
   opacity: 0;
   transform: translateY(14px);
-  animation: titleIn var(--title-duration) cubic-bezier(0.16, 1, 0.3, 1)
-             var(--title-delay) forwards;
+  animation-name: titleIn;
+  animation-duration: var(--title-duration);
+  animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+  animation-delay: var(--title-delay);
+  animation-fill-mode: forwards;
 }
 
 @keyframes titleIn {
@@ -130,8 +138,12 @@ body {
   z-index: 10;
   pointer-events: none;
   background: #ffffff;
-  /* brief hold (image keeps loading + gives a beat) then clear */
-  animation: revealFade var(--reveal-duration) var(--reveal-ease) forwards;
+  /* brief hold (image keeps loading + gives a beat) then clear.
+     longhand so iOS Safari doesn't drop a var() inside the shorthand. */
+  animation-name: revealFade;
+  animation-duration: var(--reveal-duration);
+  animation-timing-function: var(--reveal-ease);
+  animation-fill-mode: forwards;
 }
 
 @keyframes revealFade {
@@ -169,7 +181,8 @@ body {
 .hero__cta {
   position: absolute;
   left: 50%;
-  bottom: clamp(2rem, 6vh, 4.5rem);
+  /* + safe-area so viewport-fit=cover doesn't tuck it under the home indicator */
+  bottom: calc(clamp(2rem, 6vh, 4.5rem) + env(safe-area-inset-bottom, 0px));
   transform: translateX(-50%);
   z-index: 4;
 
