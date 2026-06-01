@@ -1,0 +1,6 @@
+# Netlify configuration for the Mas Sitjar placeholder site.
+# Static files are served from the repo root; serverless functions live in
+# netlify/functions. No build step — it's a static site + one function.
+[build]
+  publish = "."
+  functions = "netlify/functions"

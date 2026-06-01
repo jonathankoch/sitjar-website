@@ -95,11 +95,10 @@ body {
   color: var(--title-color);
   text-align: center;
 
-  /* "Worn" edges (SVG) + soft shadow halo so it reads over the bright sky */
+  /* soft shadow halo so it reads over the bright sky */
   filter:
-    url(#worn-text)
-    drop-shadow(0 1px 2px rgba(0, 0, 0, 0.45))
-    drop-shadow(0 6px 34px rgba(0, 0, 0, 0.5));
+    drop-shadow(0 1px 10px rgba(0, 0, 0, 0.45))
+    drop-shadow(0 6px 35px rgba(0, 0, 0, 0.5));
 
   opacity: 0;
   transform: translateY(14px);
@@ -160,4 +159,178 @@ body {
     from { opacity: 1; }
     to   { opacity: 0; }
   }
+}
+
+/* =========================================================================
+   Directions CTA + password modal + map
+   ========================================================================= */
+
+/* ---- CTA button (above the scene, below the reveal + modal) ------------ */
+.hero__cta {
+  position: absolute;
+  left: 50%;
+  bottom: clamp(2rem, 6vh, 4.5rem);
+  transform: translateX(-50%);
+  z-index: 4;
+
+  font-family: var(--title-font);
+  font-style: italic;
+  font-size: clamp(1rem, 2.2vw, 1.3rem);
+  color: var(--title-color);
+  letter-spacing: 0.02em;
+
+  padding: 0.55em 1.6em;
+  background: rgba(15, 17, 22, 0.28);
+  border: 1px solid rgba(244, 238, 226, 0.45);
+  border-radius: 999px;
+  cursor: pointer;
+  -webkit-backdrop-filter: blur(3px);
+  backdrop-filter: blur(3px);
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.35);
+  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+
+  opacity: 0;
+  animation: ctaIn 1.8s ease 3.4s forwards;   /* arrives after the reveal */
+}
+.hero__cta:hover,
+.hero__cta:focus-visible {
+  background: rgba(244, 238, 226, 0.92);
+  color: #1a1c22;
+  border-color: rgba(244, 238, 226, 0.92);
+}
+.hero__cta:focus-visible { outline: 2px solid #fff; outline-offset: 3px; }
+
+@keyframes ctaIn {
+  from { opacity: 0; transform: translateX(-50%) translateY(10px); }
+  to   { opacity: 1; transform: translateX(-50%) translateY(0); }
+}
+
+/* ---- Modal ------------------------------------------------------------- */
+.modal {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: grid;
+  place-items: center;
+  padding: 5vmin;
+}
+.modal[hidden] { display: none; }   /* beat the class selector's display:grid */
+
+.modal__backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(8, 9, 12, 0.62);
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+  animation: modalFade 0.35s ease;
+}
+.modal__card {
+  position: relative;
+  width: min(460px, 100%);
+  background: rgba(22, 24, 30, 0.92);
+  border: 1px solid rgba(244, 238, 226, 0.14);
+  border-radius: 14px;
+  padding: clamp(1.6rem, 4vw, 2.4rem);
+  color: var(--title-color);
+  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.55);
+  animation: modalCard 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.modal__close {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.7rem;
+  background: none;
+  border: none;
+  color: rgba(244, 238, 226, 0.6);
+  font-size: 1.7rem;
+  line-height: 1;
+  padding: 0.1em 0.35em;
+  cursor: pointer;
+}
+.modal__close:hover { color: var(--title-color); }
+
+.modal__title {
+  margin: 0 0 0.5rem;
+  font-family: var(--title-font);
+  font-style: italic;
+  font-weight: 500;
+  font-size: clamp(1.6rem, 5vw, 2.2rem);
+}
+.modal__hint,
+.modal__address {
+  margin: 0 0 1.1rem;
+  font-family: var(--title-font);
+  font-size: 1rem;
+  line-height: 1.5;
+  color: rgba(244, 238, 226, 0.75);
+}
+
+.modal__input {
+  width: 100%;
+  padding: 0.8em 1em;
+  font-size: 1rem;
+  color: var(--title-color);
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(244, 238, 226, 0.22);
+  border-radius: 8px;
+  margin-bottom: 0.8rem;
+}
+.modal__input:focus {
+  outline: none;
+  border-color: rgba(244, 238, 226, 0.6);
+  background: rgba(255, 255, 255, 0.1);
+}
+.modal__submit {
+  width: 100%;
+  padding: 0.8em 1em;
+  font-size: 1.05rem;
+  font-family: var(--title-font);
+  font-style: italic;
+  color: #1a1c22;
+  background: var(--title-color);
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: opacity 0.2s ease;
+}
+.modal__submit:hover { opacity: 0.9; }
+.modal__submit:disabled { opacity: 0.5; cursor: default; }
+.modal__error {
+  margin: 0.85rem 0 0;
+  color: #ffb4a8;
+  font-size: 0.92rem;
+}
+
+.modal__map {
+  position: relative;
+  aspect-ratio: 4 / 3;
+  border-radius: 10px;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.05);
+  margin-bottom: 1rem;
+}
+.modal__map iframe {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+.modal__maps-link {
+  font-family: var(--title-font);
+  color: var(--title-color);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+@keyframes modalFade { from { opacity: 0; } to { opacity: 1; } }
+@keyframes modalCard {
+  from { opacity: 0; transform: translateY(12px) scale(0.98); }
+  to   { opacity: 1; transform: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero__cta { animation: none; opacity: 1; }
+  .modal__backdrop,
+  .modal__card { animation: none; }
 }

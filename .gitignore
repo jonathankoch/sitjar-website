@@ -1,2 +1,11 @@
 .DS_Store
 .claude/settings.local.json
+
+# Local env — never commit real secrets (keep the example template)
+.env
+.env.*
+!.env.example
+
+# Netlify CLI / Node
+.netlify/
+node_modules/
